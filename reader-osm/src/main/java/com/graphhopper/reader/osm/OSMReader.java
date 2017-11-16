@@ -17,15 +17,8 @@
  */
 package com.graphhopper.reader.osm;
 
-import com.carrotsearch.hppc.IntLongMap;
-import com.carrotsearch.hppc.LongArrayList;
-import com.carrotsearch.hppc.LongIndexedContainer;
-import com.carrotsearch.hppc.LongLongMap;
-import com.carrotsearch.hppc.LongSet;
-import com.graphhopper.coll.GHIntLongHashMap;
-import com.graphhopper.coll.GHLongHashSet;
-import com.graphhopper.coll.GHLongIntBTree;
-import com.graphhopper.coll.GHLongLongHashMap;
+import com.carrotsearch.hppc.*;
+import com.graphhopper.coll.*;
 import com.graphhopper.coll.LongIntMap;
 import com.graphhopper.reader.*;
 import com.graphhopper.reader.dem.ElevationProvider;
@@ -45,13 +38,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
-import java.util.Date;
 
 import static com.graphhopper.util.Helper.nf;
 
@@ -126,6 +117,7 @@ public class OSMReader implements DataReader {
     private File osmFile;
     private Date osmDataDate;
     private boolean dontCreateStorage = false;
+    private HashMap<Long, Double> speedsMap = new HashMap<>();
 
     public OSMReader(GraphHopperStorage ghStorage) {
         this.ghStorage = ghStorage;
@@ -265,103 +257,19 @@ public class OSMReader implements DataReader {
         long relationStart = -1;
         long counter = 1;
 
-
-/*
         try {
-            Connection conn = null;
-
-            // connect way #1
-            String url1 = "jdbc:mysql://greenride-api-v2.cuqltrp6td3j.eu-west-1.rds.amazonaws.com/ridematch3";
-            String user = "greenride_api";
-            String password = "VTaztq5jHemf";
-
-            conn = DriverManager.getConnection(url1, user, password);
-            if (conn != null) {
-                System.out.println("Connected to the database");
-            } else {
-                System.out.println("NOT Connected to the database");
-            }
-
-//            String line;
-//            Scanner scanner = new Scanner(new File("speeds/p0709.csv"));
-//            scanner.useDelimiter(",");
-//            while(scanner.hasNext()){
-//                line = scanner.nextLine();
-//                System.out.println(line);
-//            }
-//            scanner.close();
-            CSVParser parser = new CSVParser(new FileReader("speeds/p0709.csv" ), CSVFormat.DEFAULT);
+            CSVParser parser = new CSVParser(new FileReader("speeds/avg_speeds.csv" ), CSVFormat.DEFAULT);
             List<CSVRecord> list = parser.getRecords();
             for( CSVRecord row : list ) {
-                float lng = Float.parseFloat(row.get(0));
-                float lat = Float.parseFloat(row.get(1));
-                float speed = Float.parseFloat(row.get(2));
-
-                String query = "INSERT INTO gh_markers (lat, lng, speed) VALUES (?, ?, ?)";
-
-                // create the mysql insert preparedstatement
-                PreparedStatement preparedStmt = conn.prepareStatement(query);
-                preparedStmt.setFloat(1, lat);
-                preparedStmt.setFloat(2, lng);
-                preparedStmt.setFloat(3, speed);
-
-                // execute the preparedstatement
-                preparedStmt.execute();
-
-                String query2 = "INSERT INTO gh_points (pt, speed) VALUES (Point(?, ?), ?)";
-
-                // create the mysql insert preparedstatement
-                PreparedStatement preparedStmt2 = conn.prepareStatement(query2);
-                preparedStmt2.setFloat(1, lat);
-                preparedStmt2.setFloat(2, lng);
-                preparedStmt2.setFloat(3, speed);
-
-                // execute the preparedstatement
-                preparedStmt2.execute();
+                long osmId= Long.parseLong(row.get(0));
+                double speed = Double.parseDouble(row.get(1));
+                speedsMap.put(osmId, speed);
             }
 //            reader = new CSVReader(new FileReader("speeds/p0709.csv"));
 //            List myEntries = reader.readAll();
-
-            if (conn != null) {
-                conn.close();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
-*/
-
-        Connection conn = null;
-        try {
-            String url1 = "jdbc:mysql://greenride-api-v2.cuqltrp6td3j.eu-west-1.rds.amazonaws.com/ridematch3";
-            String user = "greenride_api";
-            String password = "VTaztq5jHemf";
-
-            conn = DriverManager.getConnection(url1, user, password);
-            if (conn != null) {
-                System.out.println("Connected to the database");
-            } else {
-                System.out.println("NOT Connected to the database");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        String queryFmt = "SELECT\n" +
-                "   speed,\n" +
-                "   ( 6371 * acos( cos( radians(?) ) * cos( radians( lat ) ) * \n" +
-                "   \tcos( radians( lng ) - radians(?) ) + \n" +
-                "   \tsin( radians(?) ) * \n" +
-                "   \tsin( radians( lat ) ) ) ) \n" +
-                "   AS distance \n" +
-                "   FROM gh_markers \n" +
-                "   HAVING distance <= 1 \n" +
-                "   ORDER BY distance \n" +
-                "   LIMIT 1";
-
 
         try (OSMInput in = openOsmInputFile(osmFile)) {
             LongIntMap nodeFilter = getNodeMap();
@@ -380,35 +288,8 @@ public class OSMReader implements DataReader {
                             LOGGER.info(nf(counter) + ", now parsing ways");
                             wayStart = counter;
                         }
-                        // query
-//                        String queryFmt = "SELECT\n" +
-//                                "   speed,\n" +
-//                                "   ( 6371 * acos( cos( radians(@lat) ) * cos( radians( lat ) ) * \n" +
-//                                "   \tcos( radians( lng ) - radians(@lng) ) + \n" +
-//                                "   \tsin( radians(@lat) ) * \n" +
-//                                "   \tsin( radians( lat ) ) ) ) \n" +
-//                                "   AS distance \n" +
-//                                "   FROM gh_markers \n" +
-//                                "   HAVING distance <= 1 \n" +
-//                                "   ORDER BY distance \n" +
-//                                "   LIMIT 1";
 
-                        // create the java statement
-//                        Statement st = conn.createStatement();
-//                        PreparedStatement st = conn.prepareStatement(queryFmt);
-//                        st.setFloat(1, lat);
-//                        st.setFloat(2, lng);
-//                        st.setFloat(3, lat);
-//
-//                        // execute the query, and get a java resultset
-//                        ResultSet rs = st.executeQuery(query);
-
-                        // iterate through the java resultset
-//                        float speed = -1;
-//                        if (rs.next()) {
-//                            speed = rs.getFloat("speed");
-//                        }
-                        processWay((ReaderWay) conn);
+                        processWay((ReaderWay) item);
                         break;
                     case ReaderElement.RELATION:
                         if (relationStart < 0) {
@@ -447,7 +328,7 @@ public class OSMReader implements DataReader {
     /**
      * Process properties, encode flags and create edges for the way.
      */
-    void processWay(ReaderWay way, Connection conn) {
+    void processWay(ReaderWay way) {
         if (way.getNodes().size() < 2)
             return;
 
@@ -477,9 +358,7 @@ public class OSMReader implements DataReader {
                 // Add artificial tag for the estimated distance and center
                 way.setTag("estimated_distance", estimatedDist);
                 way.setTag("estimated_center", new GHPoint((firstLat + lastLat) / 2, (firstLon + lastLon) / 2));
-                double speed = conn != null ?
-                        lookupSpeed(conn, (firstLat + lastLat) / 2, (firstLon + lastLon) / 2) : -1;
-                way.setTag("estimated_speed", speed);
+                way.setTag("estimated_speed", lookupSpeed(wayOsmId));
             }
         }
 
@@ -1067,46 +946,8 @@ public class OSMReader implements DataReader {
         return getClass().getSimpleName();
     }
 
-    private double lookupSpeed(Connection conn, double lat, double lng) {
-//        String query = "SELECT " +
-//                "   speed," +
-//                "   ( 6371 * acos( cos( radians(?) ) * cos( radians( lat ) ) * " +
-//                "   cos( radians( lng ) - radians(?) ) + " +
-//                "   sin( radians(?) ) * " +
-//                "   sin( radians( lat ) ) ) ) " +
-//                "   AS distance " +
-//                "   FROM gh_markers " +
-//                "   HAVING distance < 2 " +
-//                "   ORDER BY distance " +
-//                "   LIMIT 1";
-//        LOGGER.info("SQL: " + query);
-
-        String queryFmt = "SELECT speed, (6371 * acos(cos(radians(%.6f)) * cos(radians(lat)) * " +
-                "cos(radians(lng) - radians(%.6f)) +  sin(radians(%.6f)) * sin(radians(lat)))) " +
-                "   AS distance " +
-                "   FROM gh_markers " +
-                "   HAVING distance < 2 " +
-                "   ORDER BY distance " +
-                "   LIMIT 0, 1";
-        String query = String.format(queryFmt, lat, lng, lat);
-        LOGGER.info("ST: " + query);
-
-        try {
-            Statement st = conn.createStatement();
-//            st.setDouble(1, lat);
-//            st.setDouble(2, lng);
-//            st.setDouble(3, lat);
-
-            ResultSet rs = st.executeQuery(query);
-
-            double speed = -1;
-            if (rs.next()) {
-                speed = rs.getDouble("speed");
-                LOGGER.info("[%.6f, %.6f] SPEED: %.2f", lat, lng, speed);
-            }
-            return speed;
-        } catch (Exception e) {
-            return -1;
-        }
+    private double lookupSpeed(long wayOsmId) {
+        Double avgSpeed = speedsMap.get(wayOsmId);
+        return (avgSpeed != null) ? avgSpeed : -1;
     }
 }
