@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/client-hc/directions-api-client-hc.iml" filepath="$PROJECT_DIR$/client-hc/directions-api-client-hc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/graphhopper-core.iml" filepath="$PROJECT_DIR$/core/graphhopper-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/graphhopper-parent.iml" filepath="$PROJECT_DIR$/graphhopper-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/reader-gtfs/graphhopper-reader-gtfs.iml" filepath="$PROJECT_DIR$/reader-gtfs/graphhopper-reader-gtfs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/reader-json/graphhopper-reader-json.iml" filepath="$PROJECT_DIR$/reader-json/graphhopper-reader-json.iml" />
+      <module fileurl="file://$PROJECT_DIR$/reader-osm/graphhopper-reader-osm.iml" filepath="$PROJECT_DIR$/reader-osm/graphhopper-reader-osm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/reader-shp/graphhopper-reader-shp.iml" filepath="$PROJECT_DIR$/reader-shp/graphhopper-reader-shp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tools/graphhopper-tools.iml" filepath="$PROJECT_DIR$/tools/graphhopper-tools.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web/graphhopper-web.iml" filepath="$PROJECT_DIR$/web/graphhopper-web.iml" />
+    </modules>
+  </component>
+</project>

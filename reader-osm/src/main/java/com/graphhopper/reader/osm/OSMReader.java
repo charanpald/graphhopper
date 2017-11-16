@@ -258,15 +258,14 @@ public class OSMReader implements DataReader {
         long counter = 1;
 
         try {
-            CSVParser parser = new CSVParser(new FileReader("speeds/avg_speeds.csv" ), CSVFormat.DEFAULT);
+            CSVParser parser = new CSVParser(new FileReader("speeds/avg_speeds.csv" ),
+                    CSVFormat.RFC4180.withFirstRecordAsHeader());
             List<CSVRecord> list = parser.getRecords();
             for( CSVRecord row : list ) {
                 long osmId= Long.parseLong(row.get(0));
                 double speed = Double.parseDouble(row.get(1));
                 speedsMap.put(osmId, speed);
             }
-//            reader = new CSVReader(new FileReader("speeds/p0709.csv"));
-//            List myEntries = reader.readAll();
         } catch (Exception e) {
             e.printStackTrace();
         }
