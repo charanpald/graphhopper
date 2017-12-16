@@ -20,12 +20,15 @@ package com.graphhopper.routing.weighting;
 import com.graphhopper.routing.util.FlagEncoder;
 import com.graphhopper.routing.util.HintsMap;
 import com.graphhopper.util.EdgeIteratorState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Peter Karich
  */
 public abstract class AbstractWeighting implements Weighting {
     protected final FlagEncoder flagEncoder;
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     protected AbstractWeighting(FlagEncoder encoder) {
         this.flagEncoder = encoder;
@@ -35,6 +38,7 @@ public abstract class AbstractWeighting implements Weighting {
             throw new IllegalStateException("Not a valid name for a Weighting: " + getName());
     }
 
+    // AG: TODO Check here for speed and edges
     @Override
     public long calcMillis(EdgeIteratorState edgeState, boolean reverse, int prevOrNextEdgeId) {
         long flags = edgeState.getFlags();
@@ -46,6 +50,7 @@ public abstract class AbstractWeighting implements Weighting {
         double speed = reverse ? flagEncoder.getReverseSpeed(flags) : flagEncoder.getSpeed(flags);
         if (Double.isInfinite(speed) || Double.isNaN(speed) || speed < 0)
             throw new IllegalStateException("Invalid speed stored in edge! " + speed);
+        LOGGER.info("WEIGHTING: speed = " + speed + " for edge " + edgeState.getName() + "/" + edgeState.toString() + "/");
         if (speed == 0)
             throw new IllegalStateException("Speed cannot be 0 for unblocked edge, use access properties to mark edge blocked! Should only occur for shortest path calculation. See #242.");
 

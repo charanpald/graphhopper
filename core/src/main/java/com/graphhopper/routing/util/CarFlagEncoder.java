@@ -21,6 +21,8 @@ import com.graphhopper.reader.ReaderRelation;
 import com.graphhopper.reader.ReaderWay;
 import com.graphhopper.util.Helper;
 import com.graphhopper.util.PMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -46,6 +48,8 @@ public class CarFlagEncoder extends AbstractFlagEncoder {
      * http://wiki.openstreetmap.org/wiki/OSM_tags_for_routing/Maxspeed
      */
     protected final Map<String, Integer> defaultSpeedMap = new HashMap<String, Integer>();
+
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     public CarFlagEncoder() {
         this(5, 5, 0);
@@ -161,22 +165,32 @@ public class CarFlagEncoder extends AbstractFlagEncoder {
         return shift + speedEncoder.getBits();
     }
 
+    // AG: TODO: CAR SPEED
     protected double getSpeed(ReaderWay way) {
         String highwayValue = way.getTag("highway");
-        if (!Helper.isEmpty(highwayValue) && way.hasTag("motorroad", "yes")
-                && highwayValue != "motorway" && highwayValue != "motorway_link") {
-            highwayValue = "motorroad";
+        double speed = way.getTag("estimated_speed", (double) -1);
+        if (speed == -1) {
+            if (!Helper.isEmpty(highwayValue) && way.hasTag("motorroad", "yes")
+                    && highwayValue != "motorway" && highwayValue != "motorway_link") {
+                highwayValue = "motorroad";
+            }
+            Integer defaultSpeed = defaultSpeedMap.get(highwayValue);
+            if (defaultSpeed == null)
+                throw new IllegalStateException(toString() + ", no speed found for: " + highwayValue + ", tags: " + way);
+            speed = 1.0 * defaultSpeed;
+            // AG LOGGER.info("NO speed for way with ID: " + way.getId() + ", using default as " + speed);
+        } else {
+            LOGGER.info("FOUND speed for way with ID: " + way.getId() + "as " + speed);
         }
-        Integer speed = defaultSpeedMap.get(highwayValue);
-        if (speed == null)
-            throw new IllegalStateException(toString() + ", no speed found for: " + highwayValue + ", tags: " + way);
 
         if (highwayValue.equals("track")) {
             String tt = way.getTag("tracktype");
             if (!Helper.isEmpty(tt)) {
                 Integer tInt = trackTypeSpeedMap.get(tt);
-                if (tInt != null)
+                if (tInt != null) {
                     speed = tInt;
+                    LOGGER.info("Set speed on highway type = track for way with ID: " + way.getId() + "as " + speed);
+                }
             }
         }
 
@@ -235,6 +249,7 @@ public class CarFlagEncoder extends AbstractFlagEncoder {
         return oldRelationFlags;
     }
 
+    // AG: TODO Handle way tags
     @Override
     public long handleWayTags(ReaderWay way, long allowed, long relationFlags) {
         if (!isAccept(allowed))

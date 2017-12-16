@@ -21,6 +21,8 @@ import com.graphhopper.routing.util.DataFlagEncoder;
 import com.graphhopper.util.EdgeIteratorState;
 import com.graphhopper.util.PMap;
 import com.graphhopper.util.Parameters.Routing;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Calculates the best route according to a configurable weighting.
@@ -47,6 +49,8 @@ public class GenericWeighting extends AbstractWeighting {
     protected final double height;
     protected final double weight;
     protected final double width;
+
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     public GenericWeighting(DataFlagEncoder encoder, PMap hintsMap) {
         super(encoder);
@@ -110,6 +114,8 @@ public class GenericWeighting extends AbstractWeighting {
         // but how to include e.g. maxspeed as it depends on direction? Does highway depend on direction?
         // reverse = edge.isReverse()? !reverse : reverse;
         double speed = weightingConfig.getSpeed(edgeState);
+        LOGGER.info("GENERIC WEIGHTING: speed = " + speed + " for edge " + edgeState.getName() + "/" + edgeState.toString() + "/");
+
         if (speed == 0)
             return Long.MAX_VALUE;
 

@@ -90,6 +90,8 @@ public abstract class AbstractFlagEncoder implements FlagEncoder, TurnCostEncode
 
     private ConditionalTagInspector conditionalTagInspector;
 
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+
     public AbstractFlagEncoder(PMap properties) {
         throw new RuntimeException("This method must be overridden in derived classes");
     }
@@ -312,12 +314,14 @@ public abstract class AbstractFlagEncoder implements FlagEncoder, TurnCostEncode
         return setAccess(speedEncoder.setDoubleValue(flags, 0), false, false);
     }
 
+    // AG: TODO This is being called at runtime to extract speed encoded in flags
     @Override
     public double getSpeed(long flags) {
         double speedVal = speedEncoder.getDoubleValue(flags);
         if (speedVal < 0)
             throw new IllegalStateException("Speed was negative!? " + speedVal);
 
+        // AG LOGGER.info("RUNTIME SPEED: " + speedVal);
         return speedVal;
     }
 

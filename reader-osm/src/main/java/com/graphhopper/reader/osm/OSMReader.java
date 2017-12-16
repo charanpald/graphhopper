@@ -945,6 +945,9 @@ public class OSMReader implements DataReader {
 
     private double lookupSpeed(long wayOsmId) {
         Double avgSpeed = speedsMap.get(wayOsmId);
+        if (avgSpeed != null) {
+            LOGGER.info("LOOKUP SPEED: FOUND " + avgSpeed + " for OsmId = " + wayOsmId);
+        }
         return (avgSpeed != null) ? avgSpeed : -1;
     }
 }
