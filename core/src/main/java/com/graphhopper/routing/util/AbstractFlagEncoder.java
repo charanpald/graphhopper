@@ -685,7 +685,7 @@ public abstract class AbstractFlagEncoder implements FlagEncoder, TurnCostEncode
     protected double applyMaxSpeed(ReaderWay way, double speed) {
         double maxSpeed = getMaxSpeed(way);
         // We obay speed limits
-        if (maxSpeed >= 0) {
+        if (maxSpeed < speed) {
             // We assume that the average speed is 90% of the allowed maximum
             return maxSpeed * 0.9;
         }

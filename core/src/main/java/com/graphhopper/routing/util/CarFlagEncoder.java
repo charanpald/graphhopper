@@ -171,7 +171,8 @@ public class CarFlagEncoder extends AbstractFlagEncoder {
         double speed = way.getTag("estimated_speed", (double) -1);
         if (speed == -1) {
             if (!Helper.isEmpty(highwayValue) && way.hasTag("motorroad", "yes")
-                    && highwayValue != "motorway" && highwayValue != "motorway_link") {
+                    && !Objects.equals(highwayValue, "motorway") &&
+                       !Objects.equals(highwayValue, "motorway_link")) {
                 highwayValue = "motorroad";
             }
             Integer defaultSpeed = defaultSpeedMap.get(highwayValue);
@@ -180,7 +181,7 @@ public class CarFlagEncoder extends AbstractFlagEncoder {
             speed = 1.0 * defaultSpeed;
             // AG LOGGER.info("NO speed for way with ID: " + way.getId() + ", using default as " + speed);
         } else {
-            LOGGER.info("FOUND speed for way with ID: " + way.getId() + "as " + speed);
+            LOGGER.info("FOUND speed for way with ID: " + way.getId() + " as " + speed);
         }
 
         if (highwayValue.equals("track")) {
