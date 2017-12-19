@@ -135,4 +135,9 @@ public interface EdgeIteratorState {
      * @return the specified edge e
      */
     EdgeIteratorState copyPropertiesTo(EdgeIteratorState e);
+
+
+    public long getOsmWayId();
+
+    public void setOsmWayId(long osmWayId);
 }

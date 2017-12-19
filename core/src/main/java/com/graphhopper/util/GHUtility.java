@@ -392,6 +392,10 @@ public class GHUtility {
             throw new UnsupportedOperationException("Not supported. Edge is empty.");
         }
 
+        public long getOsmWayId() { throw new UnsupportedOperationException("Not supported. Edge is empty.");}
+
+        public void setOsmWayId(long osmWayId) { throw new UnsupportedOperationException("Not supported. Edge is empty."); }
+
         @Override
         public int getAdjNode() {
             throw new UnsupportedOperationException("Not supported. Edge is empty.");

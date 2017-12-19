@@ -36,6 +36,7 @@ public class VirtualEdgeIteratorState implements EdgeIteratorState, CHEdgeIterat
     private final int adjNode;
     private final int originalTraversalKey;
     private double distance;
+    private long osmWayId;
     private long flags;
     private String name;
     // indication if edges are dispreferred as start/stop edge 
@@ -78,6 +79,10 @@ public class VirtualEdgeIteratorState implements EdgeIteratorState, CHEdgeIterat
     public int getAdjNode() {
         return adjNode;
     }
+
+    public long getOsmWayId() { return osmWayId; }
+
+    public void setOsmWayId(long osmWayId) { this.osmWayId = osmWayId; }
 
     @Override
     public PointList fetchWayGeometry(int mode) {

@@ -113,6 +113,16 @@ public class WrapperGraph implements Graph {
             }
 
             @Override
+            public long getOsmWayId() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setOsmWayId(long osmWayId) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
             public PointList fetchWayGeometry(int mode) {
                 throw new UnsupportedOperationException();
             }

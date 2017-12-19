@@ -118,6 +118,16 @@ class GraphSupport {
                     }
 
                     @Override
+                    public long getOsmWayId() {
+                        return edge.getAdjNode();
+                    }
+
+                    @Override
+                    public void setOsmWayId(long osmWayId) {
+                        edge.setOsmWayId(osmWayId);
+                    }
+
+                    @Override
                     public PointList fetchWayGeometry(int mode) {
                         return edge.fetchWayGeometry(mode);
                     }

@@ -263,6 +263,7 @@ public class OSMReader implements DataReader {
                 long osmId= Long.parseLong(row.get(0));
                 double speed = Double.parseDouble(row.get(1));
                 speedsMap.put(osmId, speed);
+                LOGGER.info("Adding speed " + speed + " for way " + osmId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -752,6 +753,8 @@ public class OSMReader implements DataReader {
 
             iter.setWayGeometry(pillarNodes);
         }
+        iter.setOsmWayId(wayOsmId);
+
         storeOsmWayID(iter.getEdge(), wayOsmId);
         return iter;
     }

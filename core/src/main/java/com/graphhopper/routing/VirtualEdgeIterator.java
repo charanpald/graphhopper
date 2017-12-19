@@ -32,6 +32,7 @@ import java.util.List;
 class VirtualEdgeIterator implements EdgeIterator, CHEdgeIteratorState {
     private final List<EdgeIteratorState> edges;
     private int current;
+    private long osmWayId;
 
     public VirtualEdgeIterator(int edgeCount) {
         edges = new ArrayList<EdgeIteratorState>(edgeCount);
@@ -73,6 +74,10 @@ class VirtualEdgeIterator implements EdgeIterator, CHEdgeIteratorState {
     public int getBaseNode() {
         return edges.get(current).getBaseNode();
     }
+
+    public long getOsmWayId() { return osmWayId; }
+
+    public void setOsmWayId(long osmWayId) { this.osmWayId = osmWayId; }
 
     @Override
     public int getAdjNode() {
