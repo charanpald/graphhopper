@@ -69,7 +69,7 @@ public class CarFlagEncoder extends AbstractFlagEncoder {
     }
 
     public CarFlagEncoder(int speedBits, double speedFactor, int maxTurnCosts) {
-        super(speedBits, speedFactor, maxTurnCosts);
+        super(speedBits + 6, 0.1, maxTurnCosts);
         restrictions.addAll(Arrays.asList("motorcar", "motor_vehicle", "vehicle", "access"));
         restrictedValues.add("private");
         restrictedValues.add("agricultural");
@@ -117,7 +117,7 @@ public class CarFlagEncoder extends AbstractFlagEncoder {
 
         destinationSpeed = 5;
 
-        maxPossibleSpeed = 140;
+        maxPossibleSpeed = 180;
 
         // autobahn
         defaultSpeedMap.put("motorway", 100);
@@ -266,6 +266,7 @@ public class CarFlagEncoder extends AbstractFlagEncoder {
 
             flags = setSpeed(flags, speed);
 
+            LOGGER.info("Speed that has been set: " + getSpeed(flags));
             boolean isRoundabout = way.hasTag("junction", "roundabout") || way.hasTag("junction", "circular");
             if (isRoundabout)
                 flags = setBool(flags, K_ROUNDABOUT, true);
@@ -291,7 +292,6 @@ public class CarFlagEncoder extends AbstractFlagEncoder {
                 flags = setSpeed(flags, destinationSpeed);
             }
         }
-
         return flags;
     }
 

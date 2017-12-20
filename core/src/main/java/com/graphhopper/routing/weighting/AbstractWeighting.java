@@ -50,7 +50,7 @@ public abstract class AbstractWeighting implements Weighting {
         double speed = reverse ? flagEncoder.getReverseSpeed(flags) : flagEncoder.getSpeed(flags);
         if (Double.isInfinite(speed) || Double.isNaN(speed) || speed < 0)
             throw new IllegalStateException("Invalid speed stored in edge! " + speed);
-        LOGGER.info("WEIGHTING: speed = " + speed + " for edge " + edgeState.getName() + "/" + edgeState.toString() + "/");
+        // LOGGER.info("WEIGHTING: speed = " + speed + " for edge " + edgeState.getName() + "/" + edgeState.toString() + "/");
         if (speed == 0)
             throw new IllegalStateException("Speed cannot be 0 for unblocked edge, use access properties to mark edge blocked! Should only occur for shortest path calculation. See #242.");
 
