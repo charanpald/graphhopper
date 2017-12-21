@@ -894,9 +894,9 @@ class BaseGraph implements Graph {
     }
 
     protected static class EdgeIterable extends CommonEdgeIterator implements EdgeExplorer, EdgeIterator {
+
         final EdgeFilter filter;
         int nextEdgeId;
-        long osmWayId;
 
         public EdgeIterable(BaseGraph baseGraph, EdgeAccess edgeAccess, EdgeFilter filter) {
             super(-1, edgeAccess, baseGraph);
@@ -909,15 +909,6 @@ class BaseGraph implements Graph {
         final void setEdgeId(int edgeId) {
             this.nextEdgeId = this.edgeId = edgeId;
         }
-
-        public void setOsmWayId(long osmWayId) {
-            this.osmWayId = osmWayId;
-        }
-
-        public long getOsmWayId() {
-            return this.osmWayId;
-        }
-
 
         final boolean init(int tmpEdgeId, int expectedAdjNode) {
             setEdgeId(tmpEdgeId);
@@ -1006,7 +997,7 @@ class BaseGraph implements Graph {
      * Include all edges of this storage in the iterator.
      */
     protected static class AllEdgeIterator extends CommonEdgeIterator implements AllEdgesIterator {
-        long osmWayId;
+
         public AllEdgeIterator(BaseGraph baseGraph) {
             this(baseGraph, baseGraph.edgeAccess);
         }
@@ -1018,14 +1009,6 @@ class BaseGraph implements Graph {
         @Override
         public int getMaxId() {
             return baseGraph.edgeCount;
-        }
-
-        public void setOsmWayId(long osmWayId) {
-            this.osmWayId = osmWayId;
-        }
-
-        public long getOsmWayId() {
-            return this.osmWayId;
         }
 
         @Override
@@ -1083,6 +1066,8 @@ class BaseGraph implements Graph {
         protected int baseNode;
         protected int adjNode;
         protected EdgeAccess edgeAccess;
+        protected long osmWayId;
+
         // we need reverse if detach is called
         boolean reverse = false;
         boolean freshFlags;
@@ -1206,6 +1191,14 @@ class BaseGraph implements Graph {
         @Override
         public final String toString() {
             return getEdge() + " " + getBaseNode() + "-" + getAdjNode();
+        }
+
+        public void setOsmWayId(long osmWayId) {
+            this.osmWayId = osmWayId;
+        }
+
+        public long getOsmWayId() {
+            return this.osmWayId;
         }
     }
 }
