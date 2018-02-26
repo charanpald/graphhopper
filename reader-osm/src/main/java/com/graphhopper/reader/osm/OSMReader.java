@@ -263,7 +263,7 @@ public class OSMReader implements DataReader {
                 long osmId= Long.parseLong(row.get(0));
                 double speed = Double.parseDouble(row.get(1));
                 speedsMap.put(osmId, speed);
-                LOGGER.info("Adding speed " + speed + " for way " + osmId);
+                LOGGER.debug("Adding speed " + speed + " for way " + osmId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -283,7 +283,7 @@ public class OSMReader implements DataReader {
 
                     case ReaderElement.WAY:
                         if (wayStart < 0) {
-                            LOGGER.info(nf(counter) + ", now parsing ways");
+                            LOGGER.debug(nf(counter) + ", now parsing ways");
                             wayStart = counter;
                         }
 
@@ -291,7 +291,7 @@ public class OSMReader implements DataReader {
                         break;
                     case ReaderElement.RELATION:
                         if (relationStart < 0) {
-                            LOGGER.info(nf(counter) + ", now parsing relations");
+                            LOGGER.debug(nf(counter) + ", now parsing relations");
                             relationStart = counter;
                         }
                         processRelation((ReaderRelation) item);
@@ -302,7 +302,7 @@ public class OSMReader implements DataReader {
                         throw new IllegalStateException("Unknown type " + item.getType());
                 }
                 if (++counter % 200_000_000 == 0) {
-                    LOGGER.info(nf(counter) + ", locs:" + nf(locations) + " (" + skippedLocations + ") " + Helper.getMemInfo());
+                    LOGGER.debug(nf(counter) + ", locs:" + nf(locations) + " (" + skippedLocations + ") " + Helper.getMemInfo());
                 }
             }
 
@@ -949,7 +949,7 @@ public class OSMReader implements DataReader {
     private double lookupSpeed(long wayOsmId) {
         Double avgSpeed = speedsMap.get(wayOsmId);
         if (avgSpeed != null) {
-            LOGGER.info("LOOKUP SPEED: FOUND " + avgSpeed + " for OsmId = " + wayOsmId);
+            LOGGER.debug("LOOKUP SPEED: FOUND " + avgSpeed + " for OsmId = " + wayOsmId);
         }
         return (avgSpeed != null) ? avgSpeed : -1;
     }

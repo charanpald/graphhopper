@@ -181,7 +181,7 @@ public class CarFlagEncoder extends AbstractFlagEncoder {
             speed = 1.0 * defaultSpeed;
             // AG LOGGER.info("NO speed for way with ID: " + way.getId() + ", using default as " + speed);
         } else {
-            LOGGER.info("FOUND speed for way with ID: " + way.getId() + " as " + speed);
+            LOGGER.debug("FOUND speed for way with ID: " + way.getId() + " as " + speed);
         }
 
         if (highwayValue.equals("track")) {
@@ -190,7 +190,7 @@ public class CarFlagEncoder extends AbstractFlagEncoder {
                 Integer tInt = trackTypeSpeedMap.get(tt);
                 if (tInt != null) {
                     speed = tInt;
-                    LOGGER.info("Set speed on highway type = track for way with ID: " + way.getId() + "as " + speed);
+                    LOGGER.debug("Set speed on highway type = track for way with ID: " + way.getId() + "as " + speed);
                 }
             }
         }
@@ -266,7 +266,7 @@ public class CarFlagEncoder extends AbstractFlagEncoder {
 
             flags = setSpeed(flags, speed);
 
-            LOGGER.info("Speed that has been set: " + getSpeed(flags));
+            LOGGER.debug("Speed that has been set: " + getSpeed(flags));
             boolean isRoundabout = way.hasTag("junction", "roundabout") || way.hasTag("junction", "circular");
             if (isRoundabout)
                 flags = setBool(flags, K_ROUNDABOUT, true);
